@@ -1,0 +1,59 @@
+name: CD Pipeline - Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - staging
+  workflow_dispatch: {}
+  release:
+    types: [published]
+
+env:
+  PORT: 5001
+  IMAGE: ${{ secrets.DOCKER_USER }}/ci-cd-tutorial-app:${{ github.sha }}
+
+jobs:
+  # JOB 1: Run tests first
+  test:
+    runs-on: ubuntu-latest
+    name: Run automated tests
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+  # JOB 2: Build and push Docker image (only if tests pass)
+  build-and-push:
+    needs: test
+    runs-on: ubuntu-latest
+    name: Build Docker image and push to Docker Hub
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Log in to Docker Hub
+        run: docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build Docker image
+        run: docker build -t ${{ env.IMAGE }} .
+
+      - name: Push image to Docker Hub
+        run: docker push ${{ env.IMAGE }}
+
+      - name: Also tag as 'staging' or 'latest'
+        run: |
+          if [ "${{ github.event_name }}" == "release" ]; then
+            docker tag ${{ env.IMAGE }} ${{ secrets.DOCKER_USER }}/ci-cd-tutorial-app:latest
+            docker push ${{ secrets.DOCKER_USER }}/ci-cd-tutorial-app:latest
+            echo "✅ Pushed as :latest (production release)"
+          else
+            docker tag ${{ env.IMAGE }} ${{ secrets.DOCKER_USER }}/ci-cd-tutorial-app:staging
+            docker push ${{ secrets.DOCKER_USER }}/ci-cd-tutorial-app:staging
+            echo "✅ Pushed as :staging"
+          fi
