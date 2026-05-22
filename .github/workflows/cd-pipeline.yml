@@ -1,4 +1,4 @@
-name: CD Pipeline - Build and Push Docker Image
+name: CD pipeline - Build and Push Docker Image 
 
 on:
   push:
