@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Build Docker image and push to Docker Hub
     env:
-      IMAGE: ${{ secrets.DOCKER_USER }}/ci-cd-tutorial-app:${{ github.sha }}
+      IMAGE: ${{ secrets.DOCKER_USERNAME }}/ci-cd-tutorial-app:${{ github.sha }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
