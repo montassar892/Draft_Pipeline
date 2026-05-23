@@ -52,11 +52,11 @@ jobs:
       - name: Also tag as 'staging' or 'latest'
         run: |
           if [ "${{ github.event_name }}" == "release" ]; then
-            docker tag ${{ env.IMAGE }} ${{ secrets.DOCKER_USER }}/ci-cd-tutorial-app:latest
-            docker push ${{ secrets.DOCKER_USER }}/ci-cd-tutorial-app:latest
+            docker tag ${{ env.IMAGE }} ${{ secrets.DOCKER_USERNAME }}/ci-cd-tutorial-app:latest
+            docker push ${{ secrets.DOCKER_USERNAME }}/ci-cd-tutorial-app:latest
             echo "✅ Pushed as :latest (production release)"
           else
-            docker tag ${{ env.IMAGE }} ${{ secrets.DOCKER_USER }}/ci-cd-tutorial-app:staging
-            docker push ${{ secrets.DOCKER_USER }}/ci-cd-tutorial-app:staging
+            docker tag ${{ env.IMAGE }} ${{ secrets.DOCKER_USERNAME }}/ci-cd-tutorial-app:staging
+            docker push ${{ secrets.DOCKER_USERNAME }}/ci-cd-tutorial-app:staging
             echo "✅ Pushed as :staging"
           fi
